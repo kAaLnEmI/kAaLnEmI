@@ -196,12 +196,14 @@ const LoginPage = {
         // Validate mobile number
         if (!Validator.mobile(mobileNumber)) {
             document.getElementById('mobileNumber').classList.add('is-invalid');
+            ToastManager.error('Please enter a valid 10-digit mobile number starting with 6, 7, 8, or 9.');
             isValid = false;
         }
         
         // Validate captcha
         if (!CaptchaManager.verify(captchaInput)) {
             document.getElementById('captcha').classList.add('is-invalid');
+            ToastManager.error('The captcha entered is incorrect. Please try again.');
             isValid = false;
         }
         
@@ -212,6 +214,8 @@ const LoginPage = {
             // Add loading state
             const submitBtn = document.querySelector('.login-btn');
             submitBtn.classList.add('loading');
+            
+            ToastManager.success('Login successful! Redirecting to next step...');
             
             setTimeout(() => {
                 Navigation.goToPage('step1.html');
@@ -268,18 +272,21 @@ const Step1Page = {
         // Validate full name
         if (!Validator.name(fullName)) {
             document.getElementById('fullName').classList.add('is-invalid');
+            ToastManager.error('Please enter a valid full name (letters and spaces only, minimum 2 characters).');
             isValid = false;
         }
         
         // Validate date of birth
         if (!Validator.date(dateOfBirth)) {
             document.getElementById('dateOfBirth').classList.add('is-invalid');
+            ToastManager.error('Please enter a valid date of birth. Age must be between 18-80 years.');
             isValid = false;
         }
         
         // Validate PAN
         if (!Validator.pan(pan)) {
             document.getElementById('pan').classList.add('is-invalid');
+            ToastManager.error('Please enter a valid PAN number in format: ABCDE1234F.');
             isValid = false;
         }
         
@@ -291,6 +298,8 @@ const Step1Page = {
             
             const submitBtn = document.querySelector('#validateForm button[type="submit"]');
             submitBtn.classList.add('loading');
+            
+            ToastManager.success('Personal details validated successfully! Proceeding to next step...');
             
             setTimeout(() => {
                 Navigation.goToPage('step2.html');
@@ -357,6 +366,7 @@ const Step2Page = {
             
             if (!Validator.email(email)) {
                 document.getElementById('email').classList.add('is-invalid');
+                ToastManager.error('Please enter a valid email address.');
                 return;
             }
             
@@ -364,6 +374,7 @@ const Step2Page = {
             AppState.userData.email = email;
             Storage.save();
             
+            ToastManager.success('Validation email sent! Please check your inbox for OTP.');
             this.showOTPField();
         });
     },
@@ -380,8 +391,11 @@ const Step2Page = {
             if (otp.length === 6) {
                 AppState.userData.emailVerified = true;
                 Storage.save();
+                ToastManager.success('Email verified successfully!');
                 this.showEmailVerified();
                 otpContainer.style.display = 'none';
+            } else {
+                ToastManager.error('Please enter a valid 6-digit OTP.');
             }
         });
     },
@@ -432,8 +446,13 @@ const Step2Page = {
         });
         
         saveAddonsBtn.addEventListener('click', () => {
-            this.saveAddons();
-            bootstrap.Modal.getInstance(document.getElementById('addonModal')).hide();
+            const savedCount = this.saveAddons();
+            if (savedCount > 0) {
+                ToastManager.success(`${savedCount} addon member(s) added successfully!`);
+                bootstrap.Modal.getInstance(document.getElementById('addonModal')).hide();
+            } else {
+                ToastManager.warning('Please fill in all required fields for at least one addon member.');
+            }
         });
     },
     
@@ -506,6 +525,8 @@ const Step2Page = {
         AppState.userData.addonRequired = addons.length > 0;
         this.updateAddonStatus();
         Storage.save();
+        
+        return addons.length;
     },
     
     updateAddonStatus() {
@@ -528,17 +549,19 @@ const Step2Page = {
         
         if (!Validator.name(fatherName)) {
             document.getElementById('fatherName').classList.add('is-invalid');
+            ToastManager.error('Please enter a valid father\'s name.');
             return;
         }
         
         if (!AppState.userData.emailVerified) {
-            alert('Please verify your email address before proceeding.');
+            ToastManager.warning('Please verify your email address before proceeding.');
             return;
         }
         
         AppState.userData.fatherName = fatherName;
         Storage.save();
         
+        ToastManager.success('Verification completed! Moving to card selection...');
         Navigation.goToPage('step3.html');
     }
 };
@@ -610,7 +633,10 @@ const Step3Page = {
             </div>
         `;
         
-        cardDiv.addEventListener('click', () => this.selectCard(card.id, cardDiv));
+        cardDiv.addEventListener('click', () => {
+            this.selectCard(card.id, cardDiv);
+            ToastManager.info(`${card.name} selected as your preferred credit card.`);
+        });
         
         if (AppState.userData.selectedCard === card.id) {
             cardDiv.classList.add('selected');
@@ -631,10 +657,11 @@ const Step3Page = {
     
     handleNext() {
         if (!AppState.userData.selectedCard) {
-            alert('Please select a credit card to continue.');
+            ToastManager.warning('Please select a credit card to continue.');
             return;
         }
         
+        ToastManager.success('Credit card selected! Proceeding to review...');
         Navigation.goToPage('step4.html');
     }
 };
@@ -718,12 +745,14 @@ const Step4Page = {
     
     handleSubmit() {
         if (!AppState.userData.termsAccepted) {
-            alert('Please accept the terms and conditions to continue.');
+            ToastManager.warning('Please accept the terms and conditions to continue.');
             return;
         }
         
         const submitBtn = document.getElementById('submitApplication');
         submitBtn.classList.add('loading');
+        
+        ToastManager.success('Application submitted successfully! Processing...');
         
         setTimeout(() => {
             Navigation.goToPage('card-selection.html');
@@ -751,6 +780,8 @@ const CardSelectionPage = {
                 const cardTypeValue = cardType.dataset.cardType;
                 AppState.userData.cardType = cardTypeValue;
                 Storage.save();
+                
+                ToastManager.success(`${cardTypeValue.charAt(0).toUpperCase() + cardTypeValue.slice(1)} card type selected! Redirecting to application status...`);
                 
                 setTimeout(() => {
                     Navigation.goToPage('status.html');
@@ -862,6 +893,105 @@ document.addEventListener('DOMContentLoaded', () => {
     PageRouter.init();
 });
 
+// Toast Notification System
+const ToastManager = {
+    init() {
+        // Create toast container if it doesn't exist
+        if (!document.querySelector('.toast-container')) {
+            const container = document.createElement('div');
+            container.className = 'toast-container';
+            document.body.appendChild(container);
+        }
+    },
+    
+    show(message, type = 'success', title = '', duration = 10000) {
+        this.init();
+        
+        const container = document.querySelector('.toast-container');
+        const toastId = `toast-${Date.now()}`;
+        
+        // Icon mapping
+        const icons = {
+            success: 'fas fa-check',
+            error: 'fas fa-times',
+            warning: 'fas fa-exclamation-triangle',
+            info: 'fas fa-info'
+        };
+        
+        // Title mapping
+        const titles = {
+            success: title || 'Success',
+            error: title || 'Error',
+            warning: title || 'Warning',
+            info: title || 'Information'
+        };
+        
+        const toast = document.createElement('div');
+        toast.id = toastId;
+        toast.className = `toast toast-${type}`;
+        toast.setAttribute('role', 'alert');
+        toast.setAttribute('aria-live', 'assertive');
+        toast.setAttribute('aria-atomic', 'true');
+        
+        toast.innerHTML = `
+            <div class="toast-header">
+                <div class="toast-icon">
+                    <i class="${icons[type]}"></i>
+                </div>
+                <strong class="me-auto">${titles[type]}</strong>
+                <button type="button" class="btn-close" onclick="ToastManager.hide('${toastId}')"></button>
+            </div>
+            <div class="toast-body">
+                ${message}
+            </div>
+        `;
+        
+        container.appendChild(toast);
+        
+        // Show toast with animation
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 100);
+        
+        // Auto-hide after duration
+        setTimeout(() => {
+            this.hide(toastId);
+        }, duration);
+        
+        return toastId;
+    },
+    
+    hide(toastId) {
+        const toast = document.getElementById(toastId);
+        if (toast) {
+            toast.classList.remove('show');
+            toast.classList.add('hide');
+            
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 300);
+        }
+    },
+    
+    success(message, title = '') {
+        return this.show(message, 'success', title);
+    },
+    
+    error(message, title = '') {
+        return this.show(message, 'error', title);
+    },
+    
+    warning(message, title = '') {
+        return this.show(message, 'warning', title);
+    },
+    
+    info(message, title = '') {
+        return this.show(message, 'info', title);
+    }
+};
+
 // Utility Functions
 const Utils = {
     formatCurrency(amount) {
@@ -875,36 +1005,18 @@ const Utils = {
         return new Date(date).toLocaleDateString('en-IN');
     },
     
+    // Legacy function for backward compatibility
     showToast(message, type = 'success') {
-        // Create toast notification
-        const toast = document.createElement('div');
-        toast.className = `toast align-items-center text-white bg-${type} border-0`;
-        toast.setAttribute('role', 'alert');
-        toast.setAttribute('aria-live', 'assertive');
-        toast.setAttribute('aria-atomic', 'true');
-        
-        toast.innerHTML = `
-            <div class="d-flex">
-                <div class="toast-body">${message}</div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-            </div>
-        `;
-        
-        document.body.appendChild(toast);
-        const bsToast = new bootstrap.Toast(toast);
-        bsToast.show();
-        
-        toast.addEventListener('hidden.bs.toast', () => {
-            toast.remove();
-        });
+        ToastManager.show(message, type);
     }
 };
 
 // Global error handler
 window.addEventListener('error', (e) => {
     console.error('Application Error:', e.error);
-    Utils.showToast('An unexpected error occurred. Please try again.', 'danger');
+    ToastManager.error('An unexpected error occurred. Please try again.');
 });
 
 // Make functions globally available for onclick handlers
 window.Step2Page = Step2Page;
+window.ToastManager = ToastManager;

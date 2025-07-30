@@ -289,6 +289,7 @@ body {
     padding: 2rem 0;
     background: var(--bg-secondary);
     border-bottom: 1px solid var(--border-color);
+    margin-top: 80px; /* Add margin to account for fixed header */
 }
 
 .step-progress {
@@ -909,6 +910,13 @@ body {
     .detail-grid {
         grid-template-columns: 1fr;
     }
+    
+    .toast-container {
+        top: 80px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
 }
 
 @media (max-width: 576px) {
@@ -1008,4 +1016,109 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--accent-secondary);
+}
+
+/* Toast Notification Styles */
+.toast-container {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    z-index: 9999;
+    max-width: 350px;
+}
+
+.toast {
+    margin-bottom: 10px;
+    box-shadow: 0 8px 25px var(--shadow-heavy);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    backdrop-filter: blur(10px);
+    animation: slideInRight 0.3s ease-out;
+}
+
+.toast.show {
+    opacity: 1;
+}
+
+.toast.hide {
+    animation: slideOutRight 0.3s ease-in;
+}
+
+.toast-header {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    border-radius: 0.75rem 0.75rem 0 0;
+    color: var(--text-primary);
+}
+
+.toast-body {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border-radius: 0 0 0.75rem 0.75rem;
+}
+
+.toast.toast-success {
+    border-left: 4px solid var(--accent-primary);
+}
+
+.toast.toast-error {
+    border-left: 4px solid var(--accent-danger);
+}
+
+.toast.toast-warning {
+    border-left: 4px solid var(--accent-warning);
+}
+
+.toast.toast-info {
+    border-left: 4px solid var(--accent-secondary);
+}
+
+.toast-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 12px;
+    color: white;
+}
+
+.toast-success .toast-icon {
+    background: var(--accent-primary);
+}
+
+.toast-error .toast-icon {
+    background: var(--accent-danger);
+}
+
+.toast-warning .toast-icon {
+    background: var(--accent-warning);
+}
+
+.toast-info .toast-icon {
+    background: var(--accent-secondary);
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
 }
