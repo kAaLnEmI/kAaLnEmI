@@ -1,8 +1,8 @@
-// Global Application State
-const AppState = {
-    currentStep: 0,
-    userData: {
-        mobileNumber: '',
+// Application State
+let appData = {
+    mobileNumber: '',
+    captchaText: '',
+    personalInfo: {
         fullName: '',
         dateOfBirth: '',
         pan: '',
@@ -11,900 +11,592 @@ const AppState = {
         emailVerified: false,
         creditLimit: 50000,
         addonRequired: false,
-        addons: [],
-        selectedCard: null,
-        cardType: '',
-        termsAccepted: false
+        addons: []
     },
-    captcha: ''
+    selectedCard: null,
+    cardType: null,
+    termsAccepted: false
 };
 
-// Local Storage Management
-const Storage = {
-    save() {
-        localStorage.setItem('creditCardApp', JSON.stringify(AppState));
-    },
+// DOM Elements
+const themeToggle = document.getElementById('themeToggle');
+const themeIcon = document.getElementById('themeIcon');
+const body = document.body;
+
+// Initialize application
+$(document).ready(function() {
+    initializeTheme();
+    generateCaptcha();
+    bindEvents();
     
-    load() {
-        const saved = localStorage.getItem('creditCardApp');
-        if (saved) {
-            Object.assign(AppState, JSON.parse(saved));
-        }
-    },
-    
-    clear() {
-        localStorage.removeItem('creditCardApp');
+    // Check which page we're on and initialize accordingly
+    const path = window.location.pathname;
+    if (path.includes('step') || path.includes('card-type') || path.includes('status')) {
+        updateProgressBar();
     }
-};
+});
 
 // Theme Management
-const ThemeManager = {
-    init() {
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        this.setTheme(savedTheme);
-        
-        document.getElementById('themeToggle').addEventListener('click', () => {
-            const currentTheme = document.body.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            this.setTheme(newTheme);
-        });
-    },
-    
-    setTheme(theme) {
-        document.body.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme);
-        
-        const themeIcon = document.querySelector('#themeToggle i');
-        if (themeIcon) {
-            themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-        }
-    }
-};
+function initializeTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    body.setAttribute('data-theme', savedTheme);
+    updateThemeIcon(savedTheme);
+}
 
-// Captcha Generator
-const CaptchaManager = {
-    generate() {
-        const characters = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
-        let captcha = '';
-        for (let i = 0; i < 5; i++) {
-            captcha += characters.charAt(Math.floor(Math.random() * characters.length));
-        }
-        AppState.captcha = captcha;
-        
-        const captchaDisplay = document.getElementById('captchaDisplay');
-        if (captchaDisplay) {
-            captchaDisplay.textContent = captcha;
-        }
-        
-        return captcha;
-    },
+function toggleTheme() {
+    const currentTheme = body.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
     
-    verify(input) {
-        return input.toLowerCase() === AppState.captcha.toLowerCase();
+    body.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcon(newTheme);
+}
+
+function updateThemeIcon(theme) {
+    if (themeIcon) {
+        themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
     }
-};
+}
+
+// Captcha Generation
+function generateCaptcha() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let captcha = '';
+    for (let i = 0; i < 6; i++) {
+        captcha += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    
+    appData.captchaText = captcha;
+    const captchaDisplay = document.getElementById('captchaText');
+    if (captchaDisplay) {
+        captchaDisplay.textContent = captcha;
+    }
+}
 
 // Form Validation
-const Validator = {
-    mobile(number) {
-        const pattern = /^[6-9]\d{9}$/;
-        return pattern.test(number);
-    },
-    
-    email(email) {
-        const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return pattern.test(email);
-    },
-    
-    pan(pan) {
-        const pattern = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
-        return pattern.test(pan.toUpperCase());
-    },
-    
-    name(name) {
-        return name.trim().length >= 2 && /^[a-zA-Z\s]+$/.test(name);
-    },
-    
-    date(date) {
-        const selectedDate = new Date(date);
-        const today = new Date();
-        const age = today.getFullYear() - selectedDate.getFullYear();
-        return age >= 18 && age <= 80;
-    }
-};
+function validateMobile(mobile) {
+    const mobileRegex = /^[0-9]{10}$/;
+    return mobileRegex.test(mobile);
+}
+
+function validateEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+function validatePAN(pan) {
+    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+    return panRegex.test(pan.toUpperCase());
+}
 
 // Progress Bar Management
-const ProgressManager = {
-    update(currentStep) {
-        const steps = document.querySelectorAll('.step');
-        const progressFill = document.querySelector('.progress-fill');
+function updateProgressBar() {
+    const path = window.location.pathname;
+    let currentStep = 0;
+    
+    if (path.includes('step1') || path.includes('step-1')) currentStep = 1;
+    else if (path.includes('step2') || path.includes('step-2')) currentStep = 2;
+    else if (path.includes('step3') || path.includes('step-3')) currentStep = 3;
+    else if (path.includes('step4') || path.includes('step-4')) currentStep = 4;
+    
+    const steps = document.querySelectorAll('.step');
+    const progressFill = document.querySelector('.progress-line-fill');
+    
+    steps.forEach((step, index) => {
+        const stepNumber = index + 1;
+        step.classList.remove('active', 'completed');
         
-        if (!steps.length) return;
-        
-        steps.forEach((step, index) => {
-            step.classList.remove('active', 'completed');
-            
-            if (index < currentStep) {
-                step.classList.add('completed');
-            } else if (index === currentStep) {
-                step.classList.add('active');
-            }
-        });
-        
-        if (progressFill) {
-            const progress = (currentStep / (steps.length - 1)) * 100;
-            progressFill.style.width = `${progress}%`;
+        if (stepNumber < currentStep) {
+            step.classList.add('completed');
+        } else if (stepNumber === currentStep) {
+            step.classList.add('active');
         }
+    });
+    
+    if (progressFill) {
+        const fillPercentage = ((currentStep - 1) / 3) * 100;
+        progressFill.style.width = fillPercentage + '%';
     }
-};
+}
 
-// Navigation Management
-const Navigation = {
-    updateActiveLink(currentPage) {
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.classList.remove('active');
-            if (link.href.includes(currentPage)) {
-                link.classList.add('active');
-            }
+// Range Slider Management
+function initializeRangeSlider() {
+    const rangeSlider = document.getElementById('creditLimitRange');
+    const rangeValue = document.getElementById('rangeValue');
+    const minValue = document.getElementById('minValue');
+    const maxValue = document.getElementById('maxValue');
+    
+    if (rangeSlider && rangeValue) {
+        rangeSlider.addEventListener('input', function() {
+            const value = parseInt(this.value);
+            rangeValue.textContent = '₹' + value.toLocaleString('en-IN');
+            appData.personalInfo.creditLimit = value;
         });
-    },
-    
-    goToPage(page) {
-        window.location.href = page;
-    },
-    
-    goBack() {
-        window.history.back();
+        
+        // Set initial values
+        if (minValue) minValue.textContent = '₹' + parseInt(rangeSlider.min).toLocaleString('en-IN');
+        if (maxValue) maxValue.textContent = '₹' + parseInt(rangeSlider.max).toLocaleString('en-IN');
+        rangeValue.textContent = '₹' + parseInt(rangeSlider.value).toLocaleString('en-IN');
     }
-};
+}
 
-// Login Page Functionality
-const LoginPage = {
-    init() {
-        Storage.load();
-        ThemeManager.init();
-        CaptchaManager.generate();
-        
-        // Refresh captcha button
-        const refreshBtn = document.getElementById('refreshCaptcha');
-        if (refreshBtn) {
-            refreshBtn.addEventListener('click', () => {
-                CaptchaManager.generate();
-            });
-        }
-        
-        // Login form submission
-        const loginForm = document.getElementById('loginForm');
-        if (loginForm) {
-            loginForm.addEventListener('submit', this.handleLogin.bind(this));
-        }
-    },
+// Addon Management
+function addAddon() {
+    const addonsContainer = document.getElementById('addonsContainer');
+    const currentAddons = addonsContainer.querySelectorAll('.addon-group').length;
     
-    handleLogin(e) {
-        e.preventDefault();
-        
-        const mobileNumber = document.getElementById('mobileNumber').value;
-        const captchaInput = document.getElementById('captcha').value;
-        
-        // Reset validation
-        document.querySelectorAll('.form-control').forEach(input => {
-            input.classList.remove('is-invalid');
-        });
-        
-        let isValid = true;
-        
-        // Validate mobile number
-        if (!Validator.mobile(mobileNumber)) {
-            document.getElementById('mobileNumber').classList.add('is-invalid');
-            isValid = false;
-        }
-        
-        // Validate captcha
-        if (!CaptchaManager.verify(captchaInput)) {
-            document.getElementById('captcha').classList.add('is-invalid');
-            isValid = false;
-        }
-        
-        if (isValid) {
-            AppState.userData.mobileNumber = mobileNumber;
-            Storage.save();
-            
-            // Add loading state
-            const submitBtn = document.querySelector('.login-btn');
-            submitBtn.classList.add('loading');
-            
-            setTimeout(() => {
-                Navigation.goToPage('step1.html');
-            }, 1000);
-        }
+    if (currentAddons >= 4) {
+        alert('Maximum 4 addons allowed');
+        return;
     }
-};
-
-// Step 1 Page Functionality
-const Step1Page = {
-    init() {
-        Storage.load();
-        ThemeManager.init();
-        ProgressManager.update(0);
-        
-        // Pre-fill form if data exists
-        this.populateForm();
-        
-        // Form submission
-        const validateForm = document.getElementById('validateForm');
-        if (validateForm) {
-            validateForm.addEventListener('submit', this.handleValidation.bind(this));
-        }
-        
-        // Back button
-        const backBtn = document.getElementById('backBtn');
-        if (backBtn) {
-            backBtn.addEventListener('click', () => Navigation.goToPage('index.html'));
-        }
-    },
     
-    populateForm() {
-        const { fullName, dateOfBirth, pan } = AppState.userData;
-        
-        if (fullName) document.getElementById('fullName').value = fullName;
-        if (dateOfBirth) document.getElementById('dateOfBirth').value = dateOfBirth;
-        if (pan) document.getElementById('pan').value = pan;
-    },
-    
-    handleValidation(e) {
-        e.preventDefault();
-        
-        const fullName = document.getElementById('fullName').value;
-        const dateOfBirth = document.getElementById('dateOfBirth').value;
-        const pan = document.getElementById('pan').value.toUpperCase();
-        
-        // Reset validation
-        document.querySelectorAll('.form-control').forEach(input => {
-            input.classList.remove('is-invalid');
-        });
-        
-        let isValid = true;
-        
-        // Validate full name
-        if (!Validator.name(fullName)) {
-            document.getElementById('fullName').classList.add('is-invalid');
-            isValid = false;
-        }
-        
-        // Validate date of birth
-        if (!Validator.date(dateOfBirth)) {
-            document.getElementById('dateOfBirth').classList.add('is-invalid');
-            isValid = false;
-        }
-        
-        // Validate PAN
-        if (!Validator.pan(pan)) {
-            document.getElementById('pan').classList.add('is-invalid');
-            isValid = false;
-        }
-        
-        if (isValid) {
-            AppState.userData.fullName = fullName;
-            AppState.userData.dateOfBirth = dateOfBirth;
-            AppState.userData.pan = pan;
-            Storage.save();
-            
-            const submitBtn = document.querySelector('#validateForm button[type="submit"]');
-            submitBtn.classList.add('loading');
-            
-            setTimeout(() => {
-                Navigation.goToPage('step2.html');
-            }, 1000);
-        }
-    }
-};
-
-// Step 2 Page Functionality
-const Step2Page = {
-    init() {
-        Storage.load();
-        ThemeManager.init();
-        ProgressManager.update(1);
-        
-        this.initRangeSlider();
-        this.populateForm();
-        this.initEmailValidation();
-        this.initAddonModal();
-        
-        // Navigation buttons
-        document.getElementById('backBtn').addEventListener('click', () => Navigation.goToPage('step1.html'));
-        document.getElementById('nextBtn').addEventListener('click', this.handleNext.bind(this));
-    },
-    
-    initRangeSlider() {
-        const rangeInput = document.getElementById('creditLimit');
-        const rangeValue = document.getElementById('rangeValue');
-        
-        if (rangeInput && rangeValue) {
-            rangeInput.value = AppState.userData.creditLimit;
-            rangeValue.textContent = `₹${AppState.userData.creditLimit.toLocaleString()}`;
-            
-            rangeInput.addEventListener('input', (e) => {
-                const value = parseInt(e.target.value);
-                rangeValue.textContent = `₹${value.toLocaleString()}`;
-                AppState.userData.creditLimit = value;
-                Storage.save();
-            });
-        }
-    },
-    
-    populateForm() {
-        const { fatherName, email } = AppState.userData;
-        
-        if (fatherName) document.getElementById('fatherName').value = fatherName;
-        if (email) document.getElementById('email').value = email;
-        
-        if (AppState.userData.emailVerified) {
-            this.showEmailVerified();
-        }
-        
-        document.getElementById('addonRequired').checked = AppState.userData.addonRequired;
-        if (AppState.userData.addonRequired) {
-            document.querySelector('.addon-status').style.display = 'block';
-        }
-    },
-    
-    initEmailValidation() {
-        const validateEmailBtn = document.getElementById('validateEmail');
-        
-        validateEmailBtn.addEventListener('click', () => {
-            const email = document.getElementById('email').value;
-            
-            if (!Validator.email(email)) {
-                document.getElementById('email').classList.add('is-invalid');
-                return;
-            }
-            
-            document.getElementById('email').classList.remove('is-invalid');
-            AppState.userData.email = email;
-            Storage.save();
-            
-            this.showOTPField();
-        });
-    },
-    
-    showOTPField() {
-        const otpContainer = document.getElementById('otpContainer');
-        otpContainer.style.display = 'block';
-        otpContainer.classList.add('fade-in');
-        
-        const validateOTPBtn = document.getElementById('validateOTP');
-        validateOTPBtn.addEventListener('click', () => {
-            const otp = document.getElementById('otp').value;
-            
-            if (otp.length === 6) {
-                AppState.userData.emailVerified = true;
-                Storage.save();
-                this.showEmailVerified();
-                otpContainer.style.display = 'none';
-            }
-        });
-    },
-    
-    showEmailVerified() {
-        const emailContainer = document.querySelector('.email-container');
-        const verifiedBadge = document.createElement('span');
-        verifiedBadge.className = 'verified-badge';
-        verifiedBadge.innerHTML = '<i class="fas fa-check"></i>Verified';
-        
-        // Remove existing badge if any
-        const existingBadge = emailContainer.querySelector('.verified-badge');
-        if (existingBadge) existingBadge.remove();
-        
-        emailContainer.appendChild(verifiedBadge);
-    },
-    
-    initAddonModal() {
-        const addonCheckbox = document.getElementById('addonRequired');
-        const addonModal = new bootstrap.Modal(document.getElementById('addonModal'));
-        
-        addonCheckbox.addEventListener('change', (e) => {
-            if (e.target.checked) {
-                addonModal.show();
-            } else {
-                AppState.userData.addonRequired = false;
-                AppState.userData.addons = [];
-                this.updateAddonStatus();
-                Storage.save();
-            }
-        });
-        
-        this.initAddonForm();
-    },
-    
-    initAddonForm() {
-        let addonCount = 1;
-        
-        const addAddonBtn = document.getElementById('addAddon');
-        const addonContainer = document.getElementById('addonContainer');
-        const saveAddonsBtn = document.getElementById('saveAddons');
-        
-        addAddonBtn.addEventListener('click', () => {
-            if (addonCount < 4) {
-                addonCount++;
-                this.createAddonGroup(addonCount, addonContainer);
-            }
-        });
-        
-        saveAddonsBtn.addEventListener('click', () => {
-            this.saveAddons();
-            bootstrap.Modal.getInstance(document.getElementById('addonModal')).hide();
-        });
-    },
-    
-    createAddonGroup(number, container) {
-        const addonGroup = document.createElement('div');
-        addonGroup.className = 'addon-group';
-        addonGroup.dataset.addonNumber = number;
-        
-        addonGroup.innerHTML = `
-            <div class="addon-header">
-                <h6 class="addon-title">Addon ${number}</h6>
-                <button type="button" class="btn btn-remove-addon" onclick="Step2Page.removeAddon(${number})">
-                    <i class="fas fa-times"></i>
+    const addonNumber = currentAddons + 1;
+    const addonHtml = `
+        <div class="addon-group" data-addon="${addonNumber}">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0">Addon ${addonNumber}</h6>
+                <button type="button" class="round-btn btn-remove" onclick="removeAddon(${addonNumber})">
+                    <i class="fas fa-minus"></i>
                 </button>
             </div>
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Addon Name</label>
-                    <input type="text" class="form-control" data-field="name" required>
+                    <input type="text" class="form-control" name="addonName${addonNumber}" required>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Mobile Number</label>
-                    <input type="tel" class="form-control" data-field="mobile" required>
+                    <input type="tel" class="form-control" name="addonMobile${addonNumber}" pattern="[0-9]{10}" required>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Date of Birth</label>
-                    <input type="date" class="form-control" data-field="dob" required>
+                    <input type="date" class="form-control" name="addonDob${addonNumber}" required>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Relationship</label>
-                    <select class="form-control" data-field="relationship" required>
+                    <select class="form-select" name="addonRelationship${addonNumber}" required>
                         <option value="">Select Relationship</option>
                         <option value="spouse">Spouse</option>
                         <option value="child">Child</option>
                         <option value="parent">Parent</option>
                         <option value="sibling">Sibling</option>
+                        <option value="other">Other</option>
                     </select>
                 </div>
             </div>
-        `;
-        
-        container.appendChild(addonGroup);
-    },
+        </div>
+    `;
     
-    removeAddon(number) {
-        const addonGroup = document.querySelector(`[data-addon-number="${number}"]`);
-        if (addonGroup) {
-            addonGroup.remove();
-        }
-    },
-    
-    saveAddons() {
-        const addonGroups = document.querySelectorAll('.addon-group');
-        const addons = [];
+    addonsContainer.insertAdjacentHTML('beforeend', addonHtml);
+    updateAddonButtons();
+}
+
+function removeAddon(addonNumber) {
+    const addonGroup = document.querySelector(`[data-addon="${addonNumber}"]`);
+    if (addonGroup) {
+        addonGroup.remove();
+        updateAddonNumbers();
+        updateAddonButtons();
+    }
+}
+
+function updateAddonNumbers() {
+    const addonGroups = document.querySelectorAll('.addon-group');
+    addonGroups.forEach((group, index) => {
+        const newNumber = index + 1;
+        group.setAttribute('data-addon', newNumber);
+        group.querySelector('h6').textContent = `Addon ${newNumber}`;
         
-        addonGroups.forEach(group => {
-            const addon = {};
-            const inputs = group.querySelectorAll('input, select');
-            
-            inputs.forEach(input => {
-                addon[input.dataset.field] = input.value;
-            });
-            
-            if (addon.name && addon.mobile && addon.dob && addon.relationship) {
-                addons.push(addon);
-            }
+        // Update input names
+        const inputs = group.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            const name = input.name;
+            if (name.includes('addonName')) input.name = `addonName${newNumber}`;
+            else if (name.includes('addonMobile')) input.name = `addonMobile${newNumber}`;
+            else if (name.includes('addonDob')) input.name = `addonDob${newNumber}`;
+            else if (name.includes('addonRelationship')) input.name = `addonRelationship${newNumber}`;
         });
         
-        AppState.userData.addons = addons;
-        AppState.userData.addonRequired = addons.length > 0;
-        this.updateAddonStatus();
-        Storage.save();
-    },
+        // Update remove button
+        const removeBtn = group.querySelector('.btn-remove');
+        removeBtn.setAttribute('onclick', `removeAddon(${newNumber})`);
+    });
+}
+
+function updateAddonButtons() {
+    const addonsContainer = document.getElementById('addonsContainer');
+    const currentAddons = addonsContainer.querySelectorAll('.addon-group').length;
+    const addBtn = document.getElementById('addAddonBtn');
     
-    updateAddonStatus() {
-        const statusElement = document.querySelector('.addon-status');
-        const checkbox = document.getElementById('addonRequired');
-        
-        if (AppState.userData.addonRequired && AppState.userData.addons.length > 0) {
-            statusElement.style.display = 'block';
-            statusElement.innerHTML = `<i class="fas fa-check text-success"></i> ${AppState.userData.addons.length} addon(s) configured`;
-            checkbox.checked = true;
-            checkbox.disabled = true;
+    if (addBtn) {
+        if (currentAddons >= 4) {
+            addBtn.disabled = true;
+            addBtn.innerHTML = '<i class="fas fa-plus"></i> Maximum Reached';
         } else {
-            statusElement.style.display = 'none';
-            checkbox.disabled = false;
+            addBtn.disabled = false;
+            addBtn.innerHTML = '<i class="fas fa-plus"></i> Add Another Addon';
         }
-    },
-    
-    handleNext() {
-        const fatherName = document.getElementById('fatherName').value;
-        
-        if (!Validator.name(fatherName)) {
-            document.getElementById('fatherName').classList.add('is-invalid');
-            return;
-        }
-        
-        if (!AppState.userData.emailVerified) {
-            alert('Please verify your email address before proceeding.');
-            return;
-        }
-        
-        AppState.userData.fatherName = fatherName;
-        Storage.save();
-        
-        Navigation.goToPage('step3.html');
     }
-};
+}
 
-// Step 3 Page Functionality
-const Step3Page = {
-    init() {
-        Storage.load();
-        ThemeManager.init();
-        ProgressManager.update(2);
-        
-        this.loadCreditCards();
-        
-        document.getElementById('backBtn').addEventListener('click', () => Navigation.goToPage('step2.html'));
-        document.getElementById('nextBtn').addEventListener('click', this.handleNext.bind(this));
-    },
+// Email Verification
+function sendOTP() {
+    const email = document.getElementById('email').value;
     
-    loadCreditCards() {
-        const cards = [
-            {
-                id: 'platinum',
-                name: 'Platinum Rewards',
-                features: ['5% cashback on dining', '2% on groceries', 'No annual fee', 'Travel insurance'],
-                icon: 'fas fa-gem'
-            },
-            {
-                id: 'gold',
-                name: 'Gold Cashback',
-                features: ['3% cashback on fuel', '1.5% on all purchases', 'Airport lounge access', 'EMI conversion'],
-                icon: 'fas fa-coins'
-            },
-            {
-                id: 'signature',
-                name: 'Signature Elite',
-                features: ['10% on premium brands', '24/7 concierge', 'Golf privileges', 'Priority banking'],
-                icon: 'fas fa-crown'
-            },
-            {
-                id: 'titanium',
-                name: 'Titanium Business',
-                features: ['Business rewards', 'Expense tracking', 'Fleet management', 'Corporate benefits'],
-                icon: 'fas fa-briefcase'
+    if (!validateEmail(email)) {
+        alert('Please enter a valid email address');
+        return;
+    }
+    
+    // Simulate OTP sending
+    const otpContainer = document.getElementById('otpContainer');
+    otpContainer.style.display = 'block';
+    
+    // Simulate OTP (in real app, this would be sent to email)
+    appData.otp = Math.floor(100000 + Math.random() * 900000).toString();
+    console.log('OTP sent:', appData.otp); // For demo purposes
+    
+    alert('OTP sent to your email! (Demo OTP: ' + appData.otp + ')');
+}
+
+function verifyOTP() {
+    const enteredOTP = document.getElementById('otpInput').value;
+    
+    if (enteredOTP === appData.otp) {
+        appData.personalInfo.emailVerified = true;
+        
+        // Show verified badge
+        const verifiedBadge = document.createElement('span');
+        verifiedBadge.className = 'verified-badge';
+        verifiedBadge.innerHTML = '<i class="fas fa-check"></i> Verified';
+        
+        const emailField = document.getElementById('email');
+        emailField.parentNode.appendChild(verifiedBadge);
+        
+        // Hide OTP container
+        document.getElementById('otpContainer').style.display = 'none';
+        
+        alert('Email verified successfully!');
+    } else {
+        alert('Invalid OTP. Please try again.');
+    }
+}
+
+// Credit Card Selection
+function selectCard(cardElement, cardId) {
+    // Remove selection from all cards
+    document.querySelectorAll('.credit-card-item').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    // Add selection to clicked card
+    cardElement.classList.add('selected');
+    appData.selectedCard = cardId;
+}
+
+// Card Type Selection
+function selectCardType(type) {
+    // Remove selection from all options
+    document.querySelectorAll('.card-type-option').forEach(option => {
+        option.classList.remove('selected');
+    });
+    
+    // Add selection to clicked option
+    document.querySelector(`[data-type="${type}"]`).classList.add('selected');
+    appData.cardType = type;
+}
+
+// Modal Management
+function showTermsModal() {
+    const modal = new bootstrap.Modal(document.getElementById('termsModal'));
+    modal.show();
+}
+
+function showAddonModal() {
+    const modal = new bootstrap.Modal(document.getElementById('addonModal'));
+    modal.show();
+}
+
+function closeAddonModal() {
+    const modal = bootstrap.Modal.getInstance(document.getElementById('addonModal'));
+    modal.hide();
+    
+    // Mark addon checkbox as checked and disabled
+    const addonCheckbox = document.getElementById('addonRequired');
+    addonCheckbox.checked = true;
+    addonCheckbox.disabled = true;
+    appData.personalInfo.addonRequired = true;
+}
+
+// Form Submissions
+function handleLogin(event) {
+    event.preventDefault();
+    
+    const mobile = document.getElementById('mobileNumber').value;
+    const captchaInput = document.getElementById('captchaInput').value;
+    
+    if (!validateMobile(mobile)) {
+        alert('Please enter a valid 10-digit mobile number');
+        return;
+    }
+    
+    if (captchaInput.toUpperCase() !== appData.captchaText) {
+        alert('Invalid captcha. Please try again.');
+        generateCaptcha();
+        document.getElementById('captchaInput').value = '';
+        return;
+    }
+    
+    appData.mobileNumber = mobile;
+    
+    // Add loading state
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<div class="loading"></div> Logging in...';
+    submitBtn.disabled = true;
+    
+    // Simulate API call
+    setTimeout(() => {
+        window.location.href = 'step1.html';
+    }, 1500);
+}
+
+function handleStep1(event) {
+    event.preventDefault();
+    
+    const formData = new FormData(event.target);
+    const fullName = formData.get('fullName');
+    const dateOfBirth = formData.get('dateOfBirth');
+    const pan = formData.get('pan');
+    
+    if (!fullName || !dateOfBirth || !pan) {
+        alert('Please fill all required fields');
+        return;
+    }
+    
+    if (!validatePAN(pan)) {
+        alert('Please enter a valid PAN number (e.g., ABCDE1234F)');
+        return;
+    }
+    
+    appData.personalInfo.fullName = fullName;
+    appData.personalInfo.dateOfBirth = dateOfBirth;
+    appData.personalInfo.pan = pan.toUpperCase();
+    
+    // Add loading state
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<div class="loading"></div> Validating...';
+    submitBtn.disabled = true;
+    
+    setTimeout(() => {
+        window.location.href = 'step2.html';
+    }, 2000);
+}
+
+function handleStep2(event) {
+    event.preventDefault();
+    
+    const formData = new FormData(event.target);
+    const fatherName = formData.get('fatherName');
+    const email = formData.get('email');
+    
+    if (!fatherName || !email) {
+        alert('Please fill all required fields');
+        return;
+    }
+    
+    if (!appData.personalInfo.emailVerified) {
+        alert('Please verify your email address first');
+        return;
+    }
+    
+    appData.personalInfo.fatherName = fatherName;
+    appData.personalInfo.email = email;
+    
+    // Collect addon data if required
+    if (appData.personalInfo.addonRequired) {
+        const addonGroups = document.querySelectorAll('.addon-group');
+        appData.personalInfo.addons = [];
+        
+        addonGroups.forEach((group, index) => {
+            const addon = {
+                name: group.querySelector(`[name="addonName${index + 1}"]`).value,
+                mobile: group.querySelector(`[name="addonMobile${index + 1}"]`).value,
+                dob: group.querySelector(`[name="addonDob${index + 1}"]`).value,
+                relationship: group.querySelector(`[name="addonRelationship${index + 1}"]`).value
+            };
+            appData.personalInfo.addons.push(addon);
+        });
+    }
+    
+    window.location.href = 'step3.html';
+}
+
+function handleStep3(event) {
+    event.preventDefault();
+    
+    if (!appData.selectedCard) {
+        alert('Please select a credit card');
+        return;
+    }
+    
+    window.location.href = 'step4.html';
+}
+
+function handleStep4(event) {
+    event.preventDefault();
+    
+    if (!appData.termsAccepted) {
+        alert('Please accept the terms and conditions');
+        return;
+    }
+    
+    window.location.href = 'card-type.html';
+}
+
+function handleCardTypeSelection(event) {
+    event.preventDefault();
+    
+    if (!appData.cardType) {
+        alert('Please select a card type');
+        return;
+    }
+    
+    window.location.href = 'status.html';
+}
+
+// Navigation
+function goBack() {
+    window.history.back();
+}
+
+function goToNext(page) {
+    window.location.href = page;
+}
+
+// Event Binding
+function bindEvents() {
+    // Theme toggle
+    if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
+    }
+    
+    // Captcha refresh
+    const refreshCaptcha = document.getElementById('refreshCaptcha');
+    if (refreshCaptcha) {
+        refreshCaptcha.addEventListener('click', generateCaptcha);
+    }
+    
+    // Form submissions
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', handleLogin);
+    }
+    
+    const step1Form = document.getElementById('step1Form');
+    if (step1Form) {
+        step1Form.addEventListener('submit', handleStep1);
+    }
+    
+    const step2Form = document.getElementById('step2Form');
+    if (step2Form) {
+        step2Form.addEventListener('submit', handleStep2);
+    }
+    
+    const step3Form = document.getElementById('step3Form');
+    if (step3Form) {
+        step3Form.addEventListener('submit', handleStep3);
+    }
+    
+    const step4Form = document.getElementById('step4Form');
+    if (step4Form) {
+        step4Form.addEventListener('submit', handleStep4);
+    }
+    
+    const cardTypeForm = document.getElementById('cardTypeForm');
+    if (cardTypeForm) {
+        cardTypeForm.addEventListener('submit', handleCardTypeSelection);
+    }
+    
+    // Range slider
+    initializeRangeSlider();
+    
+    // Terms checkbox
+    const termsCheckbox = document.getElementById('termsAccepted');
+    if (termsCheckbox) {
+        termsCheckbox.addEventListener('change', function() {
+            appData.termsAccepted = this.checked;
+        });
+    }
+    
+    // Addon checkbox
+    const addonCheckbox = document.getElementById('addonRequired');
+    if (addonCheckbox) {
+        addonCheckbox.addEventListener('change', function() {
+            if (this.checked && !this.disabled) {
+                showAddonModal();
             }
-        ];
-        
-        const container = document.getElementById('cardContainer');
-        container.innerHTML = '';
-        
-        cards.forEach(card => {
-            const cardElement = this.createCardElement(card);
-            container.appendChild(cardElement);
-        });
-    },
-    
-    createCardElement(card) {
-        const cardDiv = document.createElement('div');
-        cardDiv.className = 'credit-card';
-        cardDiv.dataset.cardId = card.id;
-        
-        cardDiv.innerHTML = `
-            <div class="card-image">
-                <i class="${card.icon}"></i>
-            </div>
-            <div class="card-details">
-                <h5>${card.name}</h5>
-                <ul class="card-features">
-                    ${card.features.map(feature => `<li>${feature}</li>`).join('')}
-                </ul>
-            </div>
-        `;
-        
-        cardDiv.addEventListener('click', () => this.selectCard(card.id, cardDiv));
-        
-        if (AppState.userData.selectedCard === card.id) {
-            cardDiv.classList.add('selected');
-        }
-        
-        return cardDiv;
-    },
-    
-    selectCard(cardId, cardElement) {
-        document.querySelectorAll('.credit-card').forEach(card => {
-            card.classList.remove('selected');
-        });
-        
-        cardElement.classList.add('selected');
-        AppState.userData.selectedCard = cardId;
-        Storage.save();
-    },
-    
-    handleNext() {
-        if (!AppState.userData.selectedCard) {
-            alert('Please select a credit card to continue.');
-            return;
-        }
-        
-        Navigation.goToPage('step4.html');
-    }
-};
-
-// Step 4 Page Functionality
-const Step4Page = {
-    init() {
-        Storage.load();
-        ThemeManager.init();
-        ProgressManager.update(3);
-        
-        this.loadSummary();
-        this.initTermsModal();
-        
-        document.getElementById('backBtn').addEventListener('click', () => Navigation.goToPage('step3.html'));
-        document.getElementById('submitApplication').addEventListener('click', this.handleSubmit.bind(this));
-    },
-    
-    loadSummary() {
-        const summaryContent = document.getElementById('summaryContent');
-        const { userData } = AppState;
-        
-        summaryContent.innerHTML = `
-            <div class="summary-row">
-                <span class="summary-label">Mobile Number</span>
-                <span class="summary-value">${userData.mobileNumber}</span>
-            </div>
-            <div class="summary-row">
-                <span class="summary-label">Full Name</span>
-                <span class="summary-value">${userData.fullName}</span>
-            </div>
-            <div class="summary-row">
-                <span class="summary-label">Date of Birth</span>
-                <span class="summary-value">${new Date(userData.dateOfBirth).toLocaleDateString()}</span>
-            </div>
-            <div class="summary-row">
-                <span class="summary-label">PAN Number</span>
-                <span class="summary-value">${userData.pan}</span>
-            </div>
-            <div class="summary-row">
-                <span class="summary-label">Father's Name</span>
-                <span class="summary-value">${userData.fatherName}</span>
-            </div>
-            <div class="summary-row">
-                <span class="summary-label">Email</span>
-                <span class="summary-value">${userData.email} <i class="fas fa-check-circle text-success"></i></span>
-            </div>
-            <div class="summary-row">
-                <span class="summary-label">Credit Limit</span>
-                <span class="summary-value">₹${userData.creditLimit.toLocaleString()}</span>
-            </div>
-            <div class="summary-row">
-                <span class="summary-label">Selected Card</span>
-                <span class="summary-value">${userData.selectedCard}</span>
-            </div>
-            ${userData.addonRequired ? `
-            <div class="summary-row">
-                <span class="summary-label">Addon Cards</span>
-                <span class="summary-value">${userData.addons.length} addon(s)</span>
-            </div>
-            ` : ''}
-        `;
-    },
-    
-    initTermsModal() {
-        const termsCheckbox = document.getElementById('termsAccepted');
-        const termsModal = new bootstrap.Modal(document.getElementById('termsModal'));
-        
-        termsCheckbox.addEventListener('change', (e) => {
-            if (e.target.checked) {
-                termsModal.show();
-            }
-        });
-        
-        document.getElementById('acceptTerms').addEventListener('click', () => {
-            AppState.userData.termsAccepted = true;
-            Storage.save();
-            termsModal.hide();
-        });
-    },
-    
-    handleSubmit() {
-        if (!AppState.userData.termsAccepted) {
-            alert('Please accept the terms and conditions to continue.');
-            return;
-        }
-        
-        const submitBtn = document.getElementById('submitApplication');
-        submitBtn.classList.add('loading');
-        
-        setTimeout(() => {
-            Navigation.goToPage('card-selection.html');
-        }, 2000);
-    }
-};
-
-// Card Selection Page
-const CardSelectionPage = {
-    init() {
-        Storage.load();
-        ThemeManager.init();
-        
-        this.initCardTypeSelection();
-    },
-    
-    initCardTypeSelection() {
-        const cardTypes = document.querySelectorAll('.card-type-option');
-        
-        cardTypes.forEach(cardType => {
-            cardType.addEventListener('click', () => {
-                cardTypes.forEach(ct => ct.classList.remove('selected'));
-                cardType.classList.add('selected');
-                
-                const cardTypeValue = cardType.dataset.cardType;
-                AppState.userData.cardType = cardTypeValue;
-                Storage.save();
-                
-                setTimeout(() => {
-                    Navigation.goToPage('status.html');
-                }, 1000);
-            });
         });
     }
-};
-
-// Application Status Page
-const StatusPage = {
-    init() {
-        Storage.load();
-        ThemeManager.init();
-        
-        this.displayApplicationDetails();
-    },
     
-    displayApplicationDetails() {
-        const { userData } = AppState;
-        
-        document.getElementById('personalDetails').innerHTML = this.createDetailGrid({
-            'Full Name': userData.fullName,
-            'Date of Birth': new Date(userData.dateOfBirth).toLocaleDateString(),
-            'PAN Number': userData.pan,
-            'Father\'s Name': userData.fatherName,
-            'Mobile Number': userData.mobileNumber,
-            'Email': userData.email
+    // Mobile number formatting
+    const mobileInput = document.getElementById('mobileNumber');
+    if (mobileInput) {
+        mobileInput.addEventListener('input', function() {
+            this.value = this.value.replace(/\D/g, '').slice(0, 10);
         });
-        
-        document.getElementById('applicationDetails').innerHTML = this.createDetailGrid({
-            'Selected Card': userData.selectedCard,
-            'Credit Limit': `₹${userData.creditLimit.toLocaleString()}`,
-            'Card Type': userData.cardType,
-            'Addon Cards': userData.addonRequired ? `${userData.addons.length} addon(s)` : 'None'
+    }
+    
+    // PAN formatting
+    const panInput = document.getElementById('pan');
+    if (panInput) {
+        panInput.addEventListener('input', function() {
+            this.value = this.value.toUpperCase().slice(0, 10);
         });
-        
-        if (userData.addonRequired && userData.addons.length > 0) {
-            const addonDetailsContainer = document.getElementById('addonDetails');
-            addonDetailsContainer.style.display = 'block';
-            
-            let addonHtml = '';
-            userData.addons.forEach((addon, index) => {
-                addonHtml += `
-                    <div class="detail-card mb-2">
-                        <h6 class="text-primary mb-2">Addon ${index + 1}</h6>
-                        ${this.createDetailGrid({
-                            'Name': addon.name,
-                            'Mobile': addon.mobile,
-                            'Date of Birth': new Date(addon.dob).toLocaleDateString(),
-                            'Relationship': addon.relationship
-                        })}
-                    </div>
-                `;
-            });
-            
-            document.getElementById('addonDetailsList').innerHTML = addonHtml;
-        }
-    },
-    
-    createDetailGrid(data) {
-        return Object.entries(data).map(([label, value]) => `
-            <div class="detail-item">
-                <span class="detail-label">${label}</span>
-                <span class="detail-value">${value}</span>
-            </div>
-        `).join('');
     }
-};
+}
 
-// Page Router
-const PageRouter = {
-    init() {
-        const page = this.getCurrentPage();
-        
-        switch (page) {
-            case 'index.html':
-            case '':
-                LoginPage.init();
-                break;
-            case 'step1.html':
-                Step1Page.init();
-                break;
-            case 'step2.html':
-                Step2Page.init();
-                break;
-            case 'step3.html':
-                Step3Page.init();
-                break;
-            case 'step4.html':
-                Step4Page.init();
-                break;
-            case 'card-selection.html':
-                CardSelectionPage.init();
-                break;
-            case 'status.html':
-                StatusPage.init();
-                break;
-        }
-    },
-    
-    getCurrentPage() {
-        return window.location.pathname.split('/').pop();
+// Load application data from localStorage if available
+function loadAppData() {
+    const savedData = localStorage.getItem('creditCardAppData');
+    if (savedData) {
+        appData = { ...appData, ...JSON.parse(savedData) };
     }
-};
+}
 
-// Initialize application when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    PageRouter.init();
+// Save application data to localStorage
+function saveAppData() {
+    localStorage.setItem('creditCardAppData', JSON.stringify(appData));
+}
+
+// Populate forms with saved data
+function populateFormData() {
+    // This function would populate form fields with saved data
+    // Implementation depends on which page is loaded
+}
+
+// Utility functions
+function formatCurrency(amount) {
+    return '₹' + amount.toLocaleString('en-IN');
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-IN');
+}
+
+function generateApplicationId() {
+    return 'CC' + Date.now().toString().slice(-8);
+}
+
+// Auto-save form data
+$(document).on('input change', 'form input, form select, form textarea', function() {
+    saveAppData();
 });
 
-// Utility Functions
-const Utils = {
-    formatCurrency(amount) {
-        return new Intl.NumberFormat('en-IN', {
-            style: 'currency',
-            currency: 'INR'
-        }).format(amount);
-    },
-    
-    formatDate(date) {
-        return new Date(date).toLocaleDateString('en-IN');
-    },
-    
-    showToast(message, type = 'success') {
-        // Create toast notification
-        const toast = document.createElement('div');
-        toast.className = `toast align-items-center text-white bg-${type} border-0`;
-        toast.setAttribute('role', 'alert');
-        toast.setAttribute('aria-live', 'assertive');
-        toast.setAttribute('aria-atomic', 'true');
-        
-        toast.innerHTML = `
-            <div class="d-flex">
-                <div class="toast-body">${message}</div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-            </div>
-        `;
-        
-        document.body.appendChild(toast);
-        const bsToast = new bootstrap.Toast(toast);
-        bsToast.show();
-        
-        toast.addEventListener('hidden.bs.toast', () => {
-            toast.remove();
-        });
-    }
-};
-
-// Global error handler
-window.addEventListener('error', (e) => {
-    console.error('Application Error:', e.error);
-    Utils.showToast('An unexpected error occurred. Please try again.', 'danger');
+// Load data on page load
+$(document).ready(function() {
+    loadAppData();
+    populateFormData();
 });
-
-// Make functions globally available for onclick handlers
-window.Step2Page = Step2Page;

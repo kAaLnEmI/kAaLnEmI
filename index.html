@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CreditPro - Professional Credit Card Application</title>
+    <title>Credit Card Application - Landing</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body data-theme="dark">
+<body>
     <!-- Fixed Header -->
-    <nav class="navbar navbar-expand-lg fixed-top">
+    <nav class="navbar navbar-expand-lg fixed-top custom-navbar">
         <div class="container">
             <a class="navbar-brand" href="index.html">
                 <i class="fas fa-credit-card me-2"></i>
@@ -22,24 +22,24 @@
             </button>
             
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
+                <ul class="navbar-nav ms-auto me-3">
                     <li class="nav-item">
                         <a class="nav-link active" href="index.html">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Products</a>
+                        <a class="nav-link" href="#about">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">About</a>
+                        <a class="nav-link" href="#services">Services</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Contact</a>
+                        <a class="nav-link" href="#contact">Contact</a>
                     </li>
                 </ul>
                 
-                <div class="navbar-nav">
-                    <button class="btn btn-theme-toggle" id="themeToggle">
-                        <i class="fas fa-moon"></i>
+                <div class="theme-toggle">
+                    <button class="btn btn-outline-light theme-btn" id="themeToggle">
+                        <i class="fas fa-moon" id="themeIcon"></i>
                     </button>
                 </div>
             </div>
@@ -48,57 +48,45 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <div class="background-overlay"></div>
         <div class="container">
-            <div class="row justify-content-center align-items-center min-vh-100">
+            <div class="row justify-content-center">
                 <div class="col-lg-5 col-md-7 col-sm-9">
                     <div class="login-card">
                         <div class="card-header text-center">
-                            <h2 class="card-title">
-                                <i class="fas fa-user-circle me-2"></i>
-                                Welcome to CreditPro
-                            </h2>
-                            <p class="card-subtitle">Start your credit card application journey</p>
+                            <h3 class="mb-1">Welcome to CreditPro</h3>
+                            <p class="text-muted">Start your credit card application journey</p>
                         </div>
                         
                         <div class="card-body">
                             <form id="loginForm">
-                                <div class="form-group mb-4">
-                                    <label for="mobileNumber" class="form-label">
-                                        <i class="fas fa-mobile-alt me-2"></i>Mobile Number
-                                    </label>
-                                    <input type="tel" 
-                                           class="form-control" 
-                                           id="mobileNumber" 
-                                           placeholder="Enter your mobile number"
-                                           pattern="[0-9]{10}"
-                                           required>
-                                    <div class="invalid-feedback">
-                                        Please enter a valid 10-digit mobile number.
+                                <div class="mb-4">
+                                    <label for="mobileNumber" class="form-label">Mobile Number</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-phone"></i>
+                                        </span>
+                                        <input type="tel" class="form-control" id="mobileNumber" 
+                                               placeholder="Enter your mobile number" 
+                                               pattern="[0-9]{10}" maxlength="10" required>
                                     </div>
+                                    <div class="form-text">Please enter a valid 10-digit mobile number</div>
                                 </div>
                                 
-                                <div class="form-group mb-4">
-                                    <label for="captcha" class="form-label">
-                                        <i class="fas fa-shield-alt me-2"></i>Captcha Verification
-                                    </label>
+                                <div class="mb-4">
+                                    <label for="captcha" class="form-label">Captcha Verification</label>
                                     <div class="captcha-container">
-                                        <div class="captcha-display" id="captchaDisplay"></div>
-                                        <button type="button" class="btn btn-outline-secondary btn-sm" id="refreshCaptcha">
-                                            <i class="fas fa-refresh"></i>
-                                        </button>
-                                    </div>
-                                    <input type="text" 
-                                           class="form-control mt-2" 
-                                           id="captcha" 
-                                           placeholder="Enter captcha"
-                                           required>
-                                    <div class="invalid-feedback">
-                                        Please enter the correct captcha.
+                                        <div class="captcha-display" id="captchaDisplay">
+                                            <span id="captchaText"></span>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary refresh-captcha" id="refreshCaptcha">
+                                                <i class="fas fa-refresh"></i>
+                                            </button>
+                                        </div>
+                                        <input type="text" class="form-control mt-2" id="captchaInput" 
+                                               placeholder="Enter captcha" required>
                                     </div>
                                 </div>
                                 
-                                <button type="submit" class="btn btn-primary w-100 login-btn">
+                                <button type="submit" class="btn btn-primary btn-lg w-100 login-btn">
                                     <i class="fas fa-sign-in-alt me-2"></i>
                                     Login & Continue
                                 </button>
@@ -111,80 +99,65 @@
     </main>
 
     <!-- Footer -->
-    <footer class="footer mt-auto">
+    <footer class="footer">
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 col-md-6 mb-4">
-                    <h5 class="footer-title">
-                        <i class="fas fa-credit-card me-2"></i>CreditPro
-                    </h5>
-                    <p class="footer-description">
-                        Your trusted partner for premium credit card solutions. Apply online with confidence and security.
-                    </p>
+                    <h5 class="footer-title">CreditPro</h5>
+                    <p class="footer-text">Your trusted partner for credit card solutions. We provide seamless and secure credit card application services.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                    </div>
                 </div>
                 
-                <div class="col-lg-2 col-md-3 col-sm-6 mb-4">
+                <div class="col-lg-2 col-md-6 mb-4">
                     <h6 class="footer-subtitle">Quick Links</h6>
                     <ul class="footer-links">
-                        <li><a href="#">Home</a></li>
-                        <li><a href="#">Products</a></li>
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Contact</a></li>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="#faq">FAQ</a></li>
                     </ul>
                 </div>
                 
-                <div class="col-lg-2 col-md-3 col-sm-6 mb-4">
+                <div class="col-lg-3 col-md-6 mb-4">
                     <h6 class="footer-subtitle">Legal</h6>
                     <ul class="footer-links">
-                        <li><a href="#">Terms & Conditions</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Cookie Policy</a></li>
-                        <li><a href="#">Disclaimer</a></li>
+                        <li><a href="#terms">Terms & Conditions</a></li>
+                        <li><a href="#privacy">Privacy Policy</a></li>
+                        <li><a href="#security">Security Policy</a></li>
+                        <li><a href="#cookies">Cookie Policy</a></li>
                     </ul>
                 </div>
                 
-                <div class="col-lg-2 col-md-6 col-sm-6 mb-4">
-                    <h6 class="footer-subtitle">Support</h6>
-                    <ul class="footer-links">
-                        <li><a href="#">Help Center</a></li>
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">Customer Service</a></li>
-                        <li><a href="#">Feedback</a></li>
-                    </ul>
-                </div>
-                
-                <div class="col-lg-2 col-md-6 col-sm-6 mb-4">
-                    <h6 class="footer-subtitle">Connect</h6>
-                    <div class="social-links">
-                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6 class="footer-subtitle">Contact Info</h6>
+                    <div class="contact-info">
+                        <p><i class="fas fa-phone me-2"></i> +1 (555) 123-4567</p>
+                        <p><i class="fas fa-envelope me-2"></i> support@creditpro.com</p>
+                        <p><i class="fas fa-map-marker-alt me-2"></i> 123 Business Ave, Suite 100</p>
                     </div>
                 </div>
             </div>
             
             <hr class="footer-divider">
             
-            <div class="row">
-                <div class="col-md-8">
-                    <p class="copyright">
-                        © 2024 CreditPro. All rights reserved. | 
-                        <a href="#">Terms of Service</a> | 
-                        <a href="#">Privacy Policy</a>
-                    </p>
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="copyright">&copy; 2024 CreditPro. All rights reserved.</p>
                 </div>
-                <div class="col-md-4 text-md-end">
-                    <p class="disclaimer">
-                        Licensed financial services provider
-                    </p>
+                <div class="col-md-6 text-md-end">
+                    <p class="disclaimer">Licensed by Financial Regulatory Authority</p>
                 </div>
             </div>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

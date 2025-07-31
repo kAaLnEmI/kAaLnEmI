@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Step 1 - Personal Details | CreditPro</title>
+    <title>Personal Details - Step 1</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body data-theme="dark">
+<body>
     <!-- Fixed Header -->
-    <nav class="navbar navbar-expand-lg fixed-top">
+    <nav class="navbar navbar-expand-lg fixed-top custom-navbar">
         <div class="container">
             <a class="navbar-brand" href="index.html">
                 <i class="fas fa-credit-card me-2"></i>
@@ -22,128 +22,119 @@
             </button>
             
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
+                <ul class="navbar-nav ms-auto me-3">
                     <li class="nav-item">
                         <a class="nav-link" href="index.html">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Products</a>
+                        <a class="nav-link" href="#about">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">About</a>
+                        <a class="nav-link" href="#services">Services</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Contact</a>
+                        <a class="nav-link" href="#contact">Contact</a>
                     </li>
                 </ul>
                 
-                <div class="navbar-nav">
-                    <button class="btn btn-theme-toggle" id="themeToggle">
-                        <i class="fas fa-moon"></i>
+                <div class="theme-toggle">
+                    <button class="btn btn-outline-light theme-btn" id="themeToggle">
+                        <i class="fas fa-moon" id="themeIcon"></i>
                     </button>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- Progress Bar -->
-    <div class="progress-container">
-        <div class="container">
-            <div class="step-progress">
-                <div class="step active">
-                    <div class="step-number">1</div>
-                    <div class="step-title">Personal Details</div>
-                </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <div class="step-title">Verification</div>
-                </div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <div class="step-title">Card Selection</div>
-                </div>
-                <div class="step">
-                    <div class="step-number">4</div>
-                    <div class="step-title">Review & Submit</div>
-                </div>
+    <!-- Step Progress Bar -->
+    <div class="container" style="margin-top: 100px;">
+        <div class="step-progress">
+            <div class="progress-container">
                 <div class="progress-line">
-                    <div class="progress-fill" style="width: 0%"></div>
+                    <div class="progress-line-fill" style="width: 25%;"></div>
+                </div>
+                
+                <div class="step active">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">Personal Details</div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Application Info</div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Card Selection</div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">Review & Submit</div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Main Content -->
-    <main class="main-content">
-        <div class="background-overlay"></div>
+    <main class="main-content" style="padding-top: 2rem;">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-8 col-md-10">
-                    <div class="login-card fade-in">
+                    <div class="form-card">
                         <div class="card-header text-center">
-                            <h2 class="card-title">
-                                <i class="fas fa-user me-2"></i>
-                                Personal Information
-                            </h2>
-                            <p class="card-subtitle">Please provide your personal details to continue</p>
+                            <h3 class="mb-1">Personal Information</h3>
+                            <p class="text-muted">Please provide your basic details to continue</p>
                         </div>
                         
                         <div class="card-body">
-                            <form id="validateForm">
+                            <form id="step1Form">
                                 <div class="row">
                                     <div class="col-md-12 mb-4">
                                         <label for="fullName" class="form-label">
-                                            <i class="fas fa-user me-2"></i>Full Name
+                                            <i class="fas fa-user me-2"></i>Full Name *
                                         </label>
-                                        <input type="text" 
-                                               class="form-control" 
-                                               id="fullName" 
-                                               placeholder="Enter your full name as per ID"
-                                               required>
-                                        <div class="invalid-feedback">
-                                            Please enter a valid full name (letters and spaces only).
-                                        </div>
+                                        <input type="text" class="form-control" id="fullName" name="fullName" 
+                                               placeholder="Enter your full name as per PAN card" required>
+                                        <div class="form-text">Name should match your government ID documents</div>
                                     </div>
                                     
                                     <div class="col-md-6 mb-4">
                                         <label for="dateOfBirth" class="form-label">
-                                            <i class="fas fa-calendar me-2"></i>Date of Birth
+                                            <i class="fas fa-calendar me-2"></i>Date of Birth *
                                         </label>
-                                        <input type="date" 
-                                               class="form-control" 
-                                               id="dateOfBirth" 
-                                               required>
-                                        <div class="invalid-feedback">
-                                            Please enter a valid date of birth (age must be between 18-80).
-                                        </div>
+                                        <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" 
+                                               max="" required>
+                                        <div class="form-text">You must be 18+ years old to apply</div>
                                     </div>
                                     
                                     <div class="col-md-6 mb-4">
                                         <label for="pan" class="form-label">
-                                            <i class="fas fa-id-card me-2"></i>PAN Number
+                                            <i class="fas fa-id-card me-2"></i>PAN Number *
                                         </label>
-                                        <input type="text" 
-                                               class="form-control" 
-                                               id="pan" 
-                                               placeholder="ABCDE1234F"
-                                               style="text-transform: uppercase;"
-                                               maxlength="10"
-                                               required>
-                                        <div class="invalid-feedback">
-                                            Please enter a valid PAN number (format: ABCDE1234F).
-                                        </div>
+                                        <input type="text" class="form-control" id="pan" name="pan" 
+                                               placeholder="ABCDE1234F" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" 
+                                               maxlength="10" style="text-transform: uppercase;" required>
+                                        <div class="form-text">10-character PAN number (e.g., ABCDE1234F)</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="alert alert-info d-flex align-items-center mb-4">
+                                    <i class="fas fa-info-circle me-3"></i>
+                                    <div>
+                                        <strong>Important:</strong> Please ensure all details match your PAN card exactly. 
+                                        Any mismatch may cause application rejection.
                                     </div>
                                 </div>
                                 
                                 <div class="d-flex justify-content-between mt-4">
-                                    <button type="button" class="btn btn-outline-secondary" id="backBtn">
-                                        <i class="fas fa-arrow-left me-2"></i>
-                                        Back
+                                    <button type="button" class="btn btn-secondary" onclick="goBack()">
+                                        <i class="fas fa-arrow-left me-2"></i>Back
                                     </button>
                                     
                                     <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-check me-2"></i>
-                                        Validate & Continue
+                                        <i class="fas fa-check me-2"></i>Validate & Continue
                                     </button>
                                 </div>
                             </form>
@@ -155,80 +146,75 @@
     </main>
 
     <!-- Footer -->
-    <footer class="footer mt-auto">
+    <footer class="footer">
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 col-md-6 mb-4">
-                    <h5 class="footer-title">
-                        <i class="fas fa-credit-card me-2"></i>CreditPro
-                    </h5>
-                    <p class="footer-description">
-                        Your trusted partner for premium credit card solutions. Apply online with confidence and security.
-                    </p>
+                    <h5 class="footer-title">CreditPro</h5>
+                    <p class="footer-text">Your trusted partner for credit card solutions. We provide seamless and secure credit card application services.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                    </div>
                 </div>
                 
-                <div class="col-lg-2 col-md-3 col-sm-6 mb-4">
+                <div class="col-lg-2 col-md-6 mb-4">
                     <h6 class="footer-subtitle">Quick Links</h6>
                     <ul class="footer-links">
-                        <li><a href="#">Home</a></li>
-                        <li><a href="#">Products</a></li>
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Contact</a></li>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="#faq">FAQ</a></li>
                     </ul>
                 </div>
                 
-                <div class="col-lg-2 col-md-3 col-sm-6 mb-4">
+                <div class="col-lg-3 col-md-6 mb-4">
                     <h6 class="footer-subtitle">Legal</h6>
                     <ul class="footer-links">
-                        <li><a href="#">Terms & Conditions</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Cookie Policy</a></li>
-                        <li><a href="#">Disclaimer</a></li>
+                        <li><a href="#terms">Terms & Conditions</a></li>
+                        <li><a href="#privacy">Privacy Policy</a></li>
+                        <li><a href="#security">Security Policy</a></li>
+                        <li><a href="#cookies">Cookie Policy</a></li>
                     </ul>
                 </div>
                 
-                <div class="col-lg-2 col-md-6 col-sm-6 mb-4">
-                    <h6 class="footer-subtitle">Support</h6>
-                    <ul class="footer-links">
-                        <li><a href="#">Help Center</a></li>
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">Customer Service</a></li>
-                        <li><a href="#">Feedback</a></li>
-                    </ul>
-                </div>
-                
-                <div class="col-lg-2 col-md-6 col-sm-6 mb-4">
-                    <h6 class="footer-subtitle">Connect</h6>
-                    <div class="social-links">
-                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6 class="footer-subtitle">Contact Info</h6>
+                    <div class="contact-info">
+                        <p><i class="fas fa-phone me-2"></i> +1 (555) 123-4567</p>
+                        <p><i class="fas fa-envelope me-2"></i> support@creditpro.com</p>
+                        <p><i class="fas fa-map-marker-alt me-2"></i> 123 Business Ave, Suite 100</p>
                     </div>
                 </div>
             </div>
             
             <hr class="footer-divider">
             
-            <div class="row">
-                <div class="col-md-8">
-                    <p class="copyright">
-                        © 2024 CreditPro. All rights reserved. | 
-                        <a href="#">Terms of Service</a> | 
-                        <a href="#">Privacy Policy</a>
-                    </p>
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="copyright">&copy; 2024 CreditPro. All rights reserved.</p>
                 </div>
-                <div class="col-md-4 text-md-end">
-                    <p class="disclaimer">
-                        Licensed financial services provider
-                    </p>
+                <div class="col-md-6 text-md-end">
+                    <p class="disclaimer">Licensed by Financial Regulatory Authority</p>
                 </div>
             </div>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="script.js"></script>
+    
+    <script>
+        // Set max date for DOB (18+ years requirement)
+        document.addEventListener('DOMContentLoaded', function() {
+            const dobInput = document.getElementById('dateOfBirth');
+            const today = new Date();
+            const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+            dobInput.max = maxDate.toISOString().split('T')[0];
+        });
+    </script>
 </body>
 </html>

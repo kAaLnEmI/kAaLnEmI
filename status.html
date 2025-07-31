@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Application Status | CreditPro</title>
+    <title>Application Status</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body data-theme="dark">
+<body>
     <!-- Fixed Header -->
-    <nav class="navbar navbar-expand-lg fixed-top">
+    <nav class="navbar navbar-expand-lg fixed-top custom-navbar">
         <div class="container">
             <a class="navbar-brand" href="index.html">
                 <i class="fas fa-credit-card me-2"></i>
@@ -22,24 +22,24 @@
             </button>
             
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
+                <ul class="navbar-nav ms-auto me-3">
                     <li class="nav-item">
                         <a class="nav-link" href="index.html">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Products</a>
+                        <a class="nav-link" href="#about">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">About</a>
+                        <a class="nav-link" href="#services">Services</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Contact</a>
+                        <a class="nav-link" href="#contact">Contact</a>
                     </li>
                 </ul>
                 
-                <div class="navbar-nav">
-                    <button class="btn btn-theme-toggle" id="themeToggle">
-                        <i class="fas fa-moon"></i>
+                <div class="theme-toggle">
+                    <button class="btn btn-outline-light theme-btn" id="themeToggle">
+                        <i class="fas fa-moon" id="themeIcon"></i>
                     </button>
                 </div>
             </div>
@@ -48,369 +48,321 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <div class="background-overlay"></div>
         <div class="container">
-            <div class="status-container fade-in">
-                <!-- Success Header -->
-                <div class="status-header">
-                    <div class="status-icon">
-                        <i class="fas fa-check"></i>
-                    </div>
-                    <h1 class="status-title">Application Submitted Successfully!</h1>
-                    <p class="status-subtitle">
-                        Your credit card application has been submitted and is being processed. 
-                        We'll notify you of the status within 2-3 business days.
-                    </p>
+            <!-- Status Page Header -->
+            <div class="status-page">
+                <div class="status-icon">
+                    <i class="fas fa-check-circle"></i>
                 </div>
+                <h1 class="status-title">Application Submitted Successfully!</h1>
+                <p class="status-subtitle">
+                    Your credit card application has been received and is being processed. 
+                    We'll notify you once it's approved.
+                </p>
+            </div>
 
-                <!-- Application Details -->
-                <div class="row">
-                    <!-- Personal Information -->
-                    <div class="col-lg-6 mb-4">
-                        <div class="detail-card slide-in-left">
-                            <div class="detail-section">
-                                <h5 class="section-title">
-                                    <i class="fas fa-user"></i>
-                                    Personal Information
-                                </h5>
-                                <div class="detail-grid" id="personalDetails">
-                                    <!-- Will be populated by JavaScript -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Application Details -->
-                    <div class="col-lg-6 mb-4">
-                        <div class="detail-card slide-in-left">
-                            <div class="detail-section">
-                                <h5 class="section-title">
-                                    <i class="fas fa-credit-card"></i>
-                                    Application Details
-                                </h5>
-                                <div class="detail-grid" id="applicationDetails">
-                                    <!-- Will be populated by JavaScript -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Addon Details (if applicable) -->
-                <div id="addonDetails" style="display: none;">
-                    <div class="detail-card">
-                        <div class="detail-section">
-                            <h5 class="section-title">
-                                <i class="fas fa-users"></i>
-                                Addon Cardholders
-                            </h5>
-                            <div id="addonDetailsList">
-                                <!-- Will be populated by JavaScript -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Application Status Timeline -->
-                <div class="detail-card">
-                    <div class="detail-section">
-                        <h5 class="section-title">
-                            <i class="fas fa-clock"></i>
-                            Application Timeline
-                        </h5>
-                        <div class="timeline">
-                            <div class="timeline-item completed">
-                                <div class="timeline-marker">
-                                    <i class="fas fa-check"></i>
-                                </div>
-                                <div class="timeline-content">
-                                    <h6>Application Submitted</h6>
-                                    <p class="text-muted">Your application has been successfully submitted</p>
-                                    <small class="text-success">Completed</small>
-                                </div>
-                            </div>
-                            <div class="timeline-item active">
-                                <div class="timeline-marker">
-                                    <i class="fas fa-search"></i>
-                                </div>
-                                <div class="timeline-content">
-                                    <h6>Document Verification</h6>
-                                    <p class="text-muted">We're verifying your documents and information</p>
-                                    <small class="text-warning">In Progress</small>
-                                </div>
-                            </div>
-                            <div class="timeline-item">
-                                <div class="timeline-marker">
-                                    <i class="fas fa-calculator"></i>
-                                </div>
-                                <div class="timeline-content">
-                                    <h6>Credit Assessment</h6>
-                                    <p class="text-muted">Credit score check and eligibility assessment</p>
-                                    <small class="text-muted">Pending</small>
-                                </div>
-                            </div>
-                            <div class="timeline-item">
-                                <div class="timeline-marker">
-                                    <i class="fas fa-thumbs-up"></i>
-                                </div>
-                                <div class="timeline-content">
-                                    <h6>Final Approval</h6>
-                                    <p class="text-muted">Final review and approval decision</p>
-                                    <small class="text-muted">Pending</small>
-                                </div>
-                            </div>
-                            <div class="timeline-item">
-                                <div class="timeline-marker">
-                                    <i class="fas fa-credit-card"></i>
-                                </div>
-                                <div class="timeline-content">
-                                    <h6>Card Delivery</h6>
-                                    <p class="text-muted">Your credit card will be dispatched</p>
-                                    <small class="text-muted">Pending</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Next Steps -->
-                <div class="detail-card">
-                    <div class="detail-section">
-                        <h5 class="section-title">
-                            <i class="fas fa-lightbulb"></i>
-                            What's Next?
-                        </h5>
+            <!-- Application Details -->
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="status-details">
                         <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <div class="next-step-card">
-                                    <div class="next-step-icon">
-                                        <i class="fas fa-bell"></i>
+                            <!-- Personal Information -->
+                            <div class="col-lg-6 mb-4">
+                                <div class="detail-section">
+                                    <h5 class="section-title mb-3">
+                                        <i class="fas fa-user me-2"></i>Personal Information
+                                    </h5>
+                                    <div class="info-card">
+                                        <div class="info-item">
+                                            <span class="info-label">Application ID:</span>
+                                            <span class="info-value" id="applicationId">CC20241215001</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Full Name:</span>
+                                            <span class="info-value" id="statusName">John Doe</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Date of Birth:</span>
+                                            <span class="info-value" id="statusDob">01/01/1990</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">PAN Number:</span>
+                                            <span class="info-value" id="statusPan">ABCDE1234F</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Father's Name:</span>
+                                            <span class="info-value" id="statusFatherName">Robert Doe</span>
+                                        </div>
                                     </div>
-                                    <h6>Stay Updated</h6>
-                                    <p>We'll send SMS and email updates on your application status</p>
                                 </div>
                             </div>
-                            <div class="col-md-4 mb-3">
-                                <div class="next-step-card">
-                                    <div class="next-step-icon">
-                                        <i class="fas fa-phone"></i>
+
+                            <!-- Contact Information -->
+                            <div class="col-lg-6 mb-4">
+                                <div class="detail-section">
+                                    <h5 class="section-title mb-3">
+                                        <i class="fas fa-address-book me-2"></i>Contact Information
+                                    </h5>
+                                    <div class="info-card">
+                                        <div class="info-item">
+                                            <span class="info-label">Mobile Number:</span>
+                                            <span class="info-value" id="statusMobile">+91 9876543210</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Email Address:</span>
+                                            <span class="info-value" id="statusEmail">
+                                                john.doe@email.com
+                                                <span class="verified-badge ms-2">
+                                                    <i class="fas fa-check"></i> Verified
+                                                </span>
+                                            </span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Application Date:</span>
+                                            <span class="info-value" id="applicationDate">December 15, 2024</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Application Status:</span>
+                                            <span class="info-value">
+                                                <span class="badge bg-warning">Under Review</span>
+                                            </span>
+                                        </div>
                                     </div>
-                                    <h6>Contact Support</h6>
-                                    <p>Call us at 1800-XXX-XXXX for any queries about your application</p>
                                 </div>
                             </div>
-                            <div class="col-md-4 mb-3">
-                                <div class="next-step-card">
-                                    <div class="next-step-icon">
-                                        <i class="fas fa-download"></i>
+                        </div>
+
+                        <div class="row">
+                            <!-- Card Details -->
+                            <div class="col-lg-6 mb-4">
+                                <div class="detail-section">
+                                    <h5 class="section-title mb-3">
+                                        <i class="fas fa-credit-card me-2"></i>Card Information
+                                    </h5>
+                                    <div class="info-card">
+                                        <div class="info-item">
+                                            <span class="info-label">Selected Card:</span>
+                                            <span class="info-value" id="statusCard">Platinum Rewards Card</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Credit Limit Applied:</span>
+                                            <span class="info-value" id="statusCreditLimit">₹50,000</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Card Type:</span>
+                                            <span class="info-value" id="statusCardType">Physical Card</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Expected Delivery:</span>
+                                            <span class="info-value" id="expectedDelivery">5-7 Business Days</span>
+                                        </div>
                                     </div>
-                                    <h6>Download App</h6>
-                                    <p>Get our mobile app to track your application and manage your account</p>
+                                </div>
+                            </div>
+
+                            <!-- Add-on Cards (if any) -->
+                            <div class="col-lg-6 mb-4">
+                                <div class="detail-section">
+                                    <h5 class="section-title mb-3">
+                                        <i class="fas fa-users me-2"></i>Add-on Cards
+                                    </h5>
+                                    <div class="info-card" id="addonCardInfo">
+                                        <div class="info-item">
+                                            <span class="info-label">Add-on Cards:</span>
+                                            <span class="info-value">None Requested</span>
+                                        </div>
+                                        <div class="text-muted">
+                                            <small>You can add family members later through our customer portal.</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Next Steps -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="detail-section">
+                                    <h5 class="section-title mb-3">
+                                        <i class="fas fa-tasks me-2"></i>What Happens Next?
+                                    </h5>
+                                    <div class="info-card">
+                                        <div class="row">
+                                            <div class="col-md-3 mb-3 text-center">
+                                                <div class="next-step">
+                                                    <div class="step-icon bg-success">
+                                                        <i class="fas fa-check"></i>
+                                                    </div>
+                                                    <h6>Application Received</h6>
+                                                    <small class="text-muted">Completed</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 mb-3 text-center">
+                                                <div class="next-step">
+                                                    <div class="step-icon bg-warning">
+                                                        <i class="fas fa-search"></i>
+                                                    </div>
+                                                    <h6>Document Verification</h6>
+                                                    <small class="text-muted">In Progress</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 mb-3 text-center">
+                                                <div class="next-step">
+                                                    <div class="step-icon bg-secondary">
+                                                        <i class="fas fa-user-check"></i>
+                                                    </div>
+                                                    <h6>Credit Assessment</h6>
+                                                    <small class="text-muted">Pending</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 mb-3 text-center">
+                                                <div class="next-step">
+                                                    <div class="step-icon bg-secondary">
+                                                        <i class="fas fa-shipping-fast"></i>
+                                                    </div>
+                                                    <h6>Card Dispatch</h6>
+                                                    <small class="text-muted">Pending</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="row">
+                            <div class="col-12 text-center">
+                                <div class="action-buttons">
+                                    <button class="btn btn-primary me-3" onclick="window.print()">
+                                        <i class="fas fa-print me-2"></i>Print Application
+                                    </button>
+                                    <button class="btn btn-outline-primary me-3" onclick="downloadPDF()">
+                                        <i class="fas fa-download me-2"></i>Download PDF
+                                    </button>
+                                    <button class="btn btn-success" onclick="window.location.href='index.html'">
+                                        <i class="fas fa-home me-2"></i>Back to Home
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-8">
+                                            <h6 class="mb-1">
+                                                <i class="fas fa-phone me-2"></i>Need Help?
+                                            </h6>
+                                            <p class="mb-0">
+                                                Contact our customer support team for any queries regarding your application.
+                                            </p>
+                                        </div>
+                                        <div class="col-md-4 text-md-end">
+                                            <a href="tel:+15551234567" class="btn btn-outline-primary">
+                                                <i class="fas fa-phone me-2"></i>Call Support
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="text-center mt-4">
-                    <button class="btn btn-primary btn-lg me-3" onclick="window.print()">
-                        <i class="fas fa-print me-2"></i>
-                        Print Details
-                    </button>
-                    <button class="btn btn-outline-secondary btn-lg" onclick="window.location.href='index.html'">
-                        <i class="fas fa-home me-2"></i>
-                        Back to Home
-                    </button>
                 </div>
             </div>
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="footer mt-auto">
+    <footer class="footer">
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 col-md-6 mb-4">
-                    <h5 class="footer-title">
-                        <i class="fas fa-credit-card me-2"></i>CreditPro
-                    </h5>
-                    <p class="footer-description">
-                        Your trusted partner for premium credit card solutions. Apply online with confidence and security.
-                    </p>
+                    <h5 class="footer-title">CreditPro</h5>
+                    <p class="footer-text">Your trusted partner for credit card solutions. We provide seamless and secure credit card application services.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                    </div>
                 </div>
                 
-                <div class="col-lg-2 col-md-3 col-sm-6 mb-4">
+                <div class="col-lg-2 col-md-6 mb-4">
                     <h6 class="footer-subtitle">Quick Links</h6>
                     <ul class="footer-links">
-                        <li><a href="#">Home</a></li>
-                        <li><a href="#">Products</a></li>
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Contact</a></li>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="#faq">FAQ</a></li>
                     </ul>
                 </div>
                 
-                <div class="col-lg-2 col-md-3 col-sm-6 mb-4">
+                <div class="col-lg-3 col-md-6 mb-4">
                     <h6 class="footer-subtitle">Legal</h6>
                     <ul class="footer-links">
-                        <li><a href="#">Terms & Conditions</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Cookie Policy</a></li>
-                        <li><a href="#">Disclaimer</a></li>
+                        <li><a href="#terms">Terms & Conditions</a></li>
+                        <li><a href="#privacy">Privacy Policy</a></li>
+                        <li><a href="#security">Security Policy</a></li>
+                        <li><a href="#cookies">Cookie Policy</a></li>
                     </ul>
                 </div>
                 
-                <div class="col-lg-2 col-md-6 col-sm-6 mb-4">
-                    <h6 class="footer-subtitle">Support</h6>
-                    <ul class="footer-links">
-                        <li><a href="#">Help Center</a></li>
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">Customer Service</a></li>
-                        <li><a href="#">Feedback</a></li>
-                    </ul>
-                </div>
-                
-                <div class="col-lg-2 col-md-6 col-sm-6 mb-4">
-                    <h6 class="footer-subtitle">Connect</h6>
-                    <div class="social-links">
-                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6 class="footer-subtitle">Contact Info</h6>
+                    <div class="contact-info">
+                        <p><i class="fas fa-phone me-2"></i> +1 (555) 123-4567</p>
+                        <p><i class="fas fa-envelope me-2"></i> support@creditpro.com</p>
+                        <p><i class="fas fa-map-marker-alt me-2"></i> 123 Business Ave, Suite 100</p>
                     </div>
                 </div>
             </div>
             
             <hr class="footer-divider">
             
-            <div class="row">
-                <div class="col-md-8">
-                    <p class="copyright">
-                        © 2024 CreditPro. All rights reserved. | 
-                        <a href="#">Terms of Service</a> | 
-                        <a href="#">Privacy Policy</a>
-                    </p>
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="copyright">&copy; 2024 CreditPro. All rights reserved.</p>
                 </div>
-                <div class="col-md-4 text-md-end">
-                    <p class="disclaimer">
-                        Licensed financial services provider
-                    </p>
+                <div class="col-md-6 text-md-end">
+                    <p class="disclaimer">Licensed by Financial Regulatory Authority</p>
                 </div>
             </div>
         </div>
     </footer>
 
-    <style>
-        /* Timeline Styles */
-        .timeline {
-            position: relative;
-            padding-left: 30px;
-        }
-
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 15px;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: var(--border-color);
-        }
-
-        .timeline-item {
-            position: relative;
-            margin-bottom: 30px;
-            padding-left: 40px;
-        }
-
-        .timeline-marker {
-            position: absolute;
-            left: -40px;
-            top: 0;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: var(--bg-tertiary);
-            border: 2px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-            font-size: 12px;
-        }
-
-        .timeline-item.completed .timeline-marker {
-            background: var(--accent-primary);
-            border-color: var(--accent-primary);
-            color: white;
-        }
-
-        .timeline-item.active .timeline-marker {
-            background: var(--accent-secondary);
-            border-color: var(--accent-secondary);
-            color: white;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(31, 111, 235, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(31, 111, 235, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(31, 111, 235, 0); }
-        }
-
-        .timeline-content h6 {
-            color: var(--text-primary);
-            margin-bottom: 5px;
-        }
-
-        .timeline-content p {
-            margin-bottom: 5px;
-            font-size: 0.9rem;
-        }
-
-        /* Next Steps Cards */
-        .next-step-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-            text-align: center;
-            height: 100%;
-            transition: all 0.3s ease;
-        }
-
-        .next-step-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px var(--shadow-light);
-        }
-
-        .next-step-icon {
-            width: 50px;
-            height: 50px;
-            background: var(--accent-secondary);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1rem;
-            color: white;
-            font-size: 1.2rem;
-        }
-
-        .next-step-card h6 {
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .next-step-card p {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin: 0;
-        }
-    </style>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="script.js"></script>
+    
+    <script>
+        // Generate application ID
+        document.addEventListener('DOMContentLoaded', function() {
+            const appId = generateApplicationId();
+            document.getElementById('applicationId').textContent = appId;
+            
+            // Set current date
+            const today = new Date();
+            document.getElementById('applicationDate').textContent = today.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            // Update card type delivery info
+            const cardType = appData.cardType || 'physical';
+            if (cardType === 'virtual') {
+                document.getElementById('statusCardType').textContent = 'Virtual Card';
+                document.getElementById('expectedDelivery').textContent = 'Instant Access';
+            }
+        });
+        
+        // Download PDF function
+        function downloadPDF() {
+            alert('PDF download functionality would be implemented here in a real application.');
+        }
+    </script>
 </body>
 </html>
